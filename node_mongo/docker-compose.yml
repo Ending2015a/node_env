@@ -1,0 +1,37 @@
+version: '3'
+services:
+    database:
+        image: mongo
+        ports:
+            - "27017:27017"
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=user
+            - MONGO_INITDB_ROOT_PASSWORD=userpass
+            - MONGO_INITDB_DATABASE=appdb
+        volumes:
+            - database:/data/db
+            - ./entrypoint:/docker-entrypoint-initdb.d
+        networks:
+            backend:
+        restart: always
+
+    app:
+        build:
+            context: .
+            dockerfile: node/Dockerfile
+            args:
+                - USERNAME=user
+                - PASSWORD=userpass
+                - PORT=8888
+        image: node_env
+        ports:
+            - "8888:8888"
+        networks:
+            backend:
+        restart: always
+        depends_on:
+            - database
+networks:
+    backend:
+volumes:
+    database:

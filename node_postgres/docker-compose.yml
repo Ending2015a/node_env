@@ -1,0 +1,36 @@
+version: '3'
+services:
+    database:
+        image: postgres:11.2
+        ports:
+            - "5432:5432"
+        environment:
+            - POSTGRES_USER=user
+            - POSTGRES_PASSWORD=userpass
+            - POSTGRES_DB=appdb
+        volumes:
+            - database:/var/lib/postgresql/data
+        networks:
+            backend:
+        restart: always
+
+    app:
+        build:
+            context: .
+            dockerfile: node/Dockerfile
+            args:
+                - USERNAME=user
+                - PASSWORD=userpass
+        image: node_env
+        ports:
+            - "8888:8888"
+        networks:
+            backend:
+        restart: always
+        depends_on:
+            - database
+networks:
+    backend:
+volumes:
+    database:
+
